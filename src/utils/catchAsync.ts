@@ -18,11 +18,18 @@ export const catchAsync =
         next(error);
       } else {
         const normalizedError = new Error("Unknown error occurred");
-        (normalizedError as any).original = error; 
+        (normalizedError as any).original = error;
         next(normalizedError);
       }
       next(error);
     }
   };
 
-export default catchAsync;
+export const sendResponse = (
+  res: Response,
+  status: number,
+  message?: string,
+  data?: any
+) => {
+  return res.status(status).json({ message, data });
+};
