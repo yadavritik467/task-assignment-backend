@@ -1,5 +1,5 @@
 import mongoose, { Document } from "mongoose";
-import { Roles } from "../enums/Role.enum.js";
+import { ROLES } from "../enums/enum.js";
 
 export interface IUser extends Document {
   name: string;
@@ -21,8 +21,8 @@ const userSchema = new mongoose.Schema<IUser>(
     password: { type: String, required: true },
     role: {
       type: String,
-      default: "admin",
-      enum: [Roles.USER, Roles.ADMIN, Roles.MANAGER, Roles.BDE],
+      default: ROLES.USER,
+      enum: [ROLES.USER, ROLES.ADMIN, ROLES.MANAGER],
     },
   },
   { timestamps: true }

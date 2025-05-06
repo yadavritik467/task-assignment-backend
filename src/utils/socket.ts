@@ -7,7 +7,7 @@ const userSocketMap = new Map<string, string>();
 export const initSocket = (server: http.Server) => {
   io = new Server(server, {
     cors: {
-      origin: "*",
+      origin: process.env.FRONT_URL as string,
       methods: ["GET", "POST"],
     },
   });
@@ -15,8 +15,8 @@ export const initSocket = (server: http.Server) => {
   io.on("connection", (socket) => {
     console.log("Client connected:", socket.id);
 
-    socket.on("register", ({ userId, role }) => {
-      const key = `${userId}_${role}`;
+    socket.on("register", ({ userId }) => {
+      const key = `${userId}`;
       userSocketMap.set(key, socket.id);
 
       console.log("register ", userSocketMap);

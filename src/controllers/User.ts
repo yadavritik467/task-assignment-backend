@@ -1,10 +1,11 @@
 import bcrypt from "bcryptjs";
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import { ROLES } from "../enums/enum.js";
 import { AuthRequest } from "../middleware/authMiddleware.js";
 import User from "../models/User.js";
 import { catchAsync, sendResponse } from "../utils/catchAsync.js";
 import { AppError } from "../utils/errorHandler.js";
+import { generateToken } from "../utils/utils.js";
 
 interface userReqBody {
   name?: string;
@@ -18,7 +19,13 @@ export const signup = catchAsync(
     next: NextFunction
   ) => {
     let { name, email, password } = req.body;
+
+    if (!name) return next(new AppError("Name is required", 400));
+    if (!email) return next(new AppError("Email is required", 400));
+    if (!password) return next(new AppError("Password is required", 400));
+
     email = email?.toLowerCase();
+
     // Check if user exists
     let user = await User.findOne({ email });
     if (user) return next(new AppError("User already exists", 400));
@@ -35,6 +42,38 @@ export const signup = catchAsync(
   }
 );
 
+export const adminLogin = catchAsync(
+  async (
+    req: Request<{}, {}, userReqBody>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    let { email, password } = req.body;
+
+    if (!email) return next(new AppError("Email is required", 400));
+    if (!password) return next(new AppError("Password is required", 400));
+    email = email?.toLowerCase();
+
+    const isExistsAdmin = await User.findOne({ email });
+    if (!isExistsAdmin) {
+      const admin = await User.create({
+        email,
+        password,
+        role: ROLES.ADMIN,
+      });
+
+      const token = generateToken(admin);
+      return sendResponse(res, 200, "Login successfully", token);
+    } else {
+      // Check password
+      const isMatch = await bcrypt.compare(password, isExistsAdmin.password);
+      if (!isMatch) return next(new AppError("Invalid credential", 400));
+      const token = generateToken(isExistsAdmin);
+      return sendResponse(res, 200, "Login successfully", token);
+    }
+  }
+);
+
 export const login = catchAsync(
   async (
     req: Request<{}, {}, userReqBody>,
@@ -42,6 +81,9 @@ export const login = catchAsync(
     next: NextFunction
   ) => {
     let { email, password } = req.body;
+
+    if (!email) return next(new AppError("Email is required", 400));
+    if (!password) return next(new AppError("Password is required", 400));
     email = email?.toLowerCase();
 
     // Find user
@@ -53,13 +95,7 @@ export const login = catchAsync(
     if (!isMatch) return next(new AppError("Invalid credential", 400));
 
     // Generate JWT
-    const token = jwt.sign(
-      { _id: user._id, name: user?.name, role: user?.role },
-      process.env.JWT_SECRET as string,
-      {
-        expiresIn: "24h",
-      }
-    );
+    const token = generateToken(user);
 
     return sendResponse(res, 200, "Login successfully", token);
   }
@@ -97,7 +133,7 @@ export const getAllUsers = catchAsync(
       .limit(limit);
 
     const plainUsers = allUsers.map((u) => {
-      const userObj = u.toObject(); // Convert Mongoose document to plain object
+      const userObj = u.toObject();
       return {
         ...userObj,
         qrCodes: Array.isArray(userObj.qrCodes) ? userObj.qrCodes.length : 0,

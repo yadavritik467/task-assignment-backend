@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { Roles } from "../enums/Role.enum.js";
+import { ROLES } from "../enums/enum.js";
 
 export interface AuthRequest extends Request {
   user?: any;
@@ -29,8 +29,8 @@ export const authMiddleware = (
   next();
 };
 
-export const isAdmin =
-  (allowedRoles: Roles[]) =>
+export const checkRoles =
+  (allowedRoles: ROLES[]) =>
   (req: AuthRequest, res: Response, next: NextFunction) => {
     req.user = checkToken(req, res);
 
