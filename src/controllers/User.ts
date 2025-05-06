@@ -88,7 +88,7 @@ export const login = catchAsync(
 
     // Find user
     const user = await User.findOne({ email });
-    if (!user) return next(new AppError("Invalid credential", 400));
+    if (!user) return next(new AppError("Account does not exist", 404));
 
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
