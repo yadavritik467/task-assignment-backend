@@ -56,9 +56,13 @@ export const adminLogin = catchAsync(
 
     const isExistsAdmin = await User.findOne({ email });
     if (!isExistsAdmin) {
+      // Hash Password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
       const admin = await User.create({
+        name: "Admin",
         email,
-        password,
+        password:hashedPassword,
         role: ROLES.ADMIN,
       });
 
