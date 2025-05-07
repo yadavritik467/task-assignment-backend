@@ -6,12 +6,6 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: string;
-  qrCodes: {
-    shortUrl: String;
-    originalUrl: String;
-    createdAt: string;
-    assignedTo: string;
-  }[];
 }
 
 const userSchema = new mongoose.Schema<IUser>(

@@ -62,7 +62,7 @@ export const adminLogin = catchAsync(
       const admin = await User.create({
         name: "Admin",
         email,
-        password:hashedPassword,
+        password: hashedPassword,
         role: ROLES.ADMIN,
       });
 
@@ -136,15 +136,8 @@ export const getAllUsers = catchAsync(
       .skip(skip)
       .limit(limit);
 
-    const plainUsers = allUsers.map((u) => {
-      const userObj = u.toObject();
-      return {
-        ...userObj,
-        qrCodes: Array.isArray(userObj.qrCodes) ? userObj.qrCodes.length : 0,
-      };
-    });
     return sendResponse(res, 200, "Login successfully", {
-      allUsers: plainUsers,
+      allUsers,
     });
   }
 );

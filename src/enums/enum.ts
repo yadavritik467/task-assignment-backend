@@ -4,9 +4,9 @@ export enum ROLES {
   MANAGER = "manager",
 }
 export enum STATUS {
-  PENDING = "pending",
-  DOING = "doing",
-  DONE = "done",
+  TODO = "todo",
+  INPROGRESS = "in-progress",
+  COMPLETED = "completed",
 }
 export enum PRIORITY {
   LOW = "low",

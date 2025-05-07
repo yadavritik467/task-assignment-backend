@@ -5,8 +5,9 @@ export interface Tasks extends Document {
   title: string;
   description: string;
   assignedTo: mongoose.Schema.Types.ObjectId;
+  createdBy: mongoose.Schema.Types.ObjectId;
   status: string;
-  dueDate: string;
+  dueDate: Date;
   priority: string;
 }
 
@@ -19,11 +20,15 @@ const TaskSchema = new mongoose.Schema<Tasks>(
       ref: "User",
       required: true,
     },
-    dueDate: { type: String, required: true },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    dueDate: { type: Date, required: true },
     status: {
       type: String,
-      default: STATUS.PENDING,
-      enum: [STATUS.PENDING, STATUS.DOING, STATUS.DONE],
+      enum: [STATUS.TODO, STATUS.INPROGRESS, STATUS.COMPLETED],
     },
     priority: {
       type: String,
