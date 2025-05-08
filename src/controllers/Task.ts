@@ -4,7 +4,7 @@ import { catchAsync, sendResponse } from "../utils/catchAsync.js";
 import { AppError } from "../utils/errorHandler.js";
 import Task from "../models/Task.js";
 import { getIO } from "../utils/socket.js";
-import { SOCKETEVENT, STATUS } from "../enums/enum.js";
+import { ROLES, SOCKETEVENT, STATUS } from "../enums/enum.js";
 import Notification from "../models/Notification.js";
 
 export const createTask = catchAsync(
@@ -168,20 +168,25 @@ export const getAllTasks = catchAsync(
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
+    const assignedFilter =
+      req?.user.role === ROLES.USER ? { assignedTo: req?.user?._id } : {};
 
     const inProgressTaskCount = await Task.countDocuments({
+      ...assignedFilter,
       status: STATUS.INPROGRESS,
     });
     const completedTaskCount = await Task.countDocuments({
+      ...assignedFilter,
       status: STATUS.INPROGRESS,
     });
     const now = new Date();
 
     const overDueTaskCount = await Task.countDocuments({
+      ...assignedFilter,
       dueDate: { $lt: now },
       status: { $ne: STATUS.COMPLETED },
     });
-    const allTaskCount = await Task.countDocuments();
+    const allTaskCount = await Task.countDocuments(assignedFilter);
 
     return sendResponse(res, 200, "", {
       allTasks,
