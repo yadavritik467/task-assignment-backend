@@ -7,6 +7,7 @@ import errorMiddleware from "./middleware/errorMiddleware.js";
 import { initSocket } from "./utils/socket.js";
 import userRoutes from "./routes/User.js"
 import tasksRoutes from "./routes/Tasks.js"
+import notificationRoutes from "./routes/notificationRoutes.js"
 
 dotenv.config();
 const app = express();
@@ -30,6 +31,7 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log(err));
 
+app.use("/api/v1", notificationRoutes);
 app.use("/api/v1", tasksRoutes);
 app.use("/api/v1", userRoutes);
 initSocket(server);
