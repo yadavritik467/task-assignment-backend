@@ -34,7 +34,7 @@ mongoose
 app.use("/api/v1", notificationRoutes);
 app.use("/api/v1", tasksRoutes);
 app.use("/api/v1", userRoutes);
-initSocket(server);
+// initSocket(server);
 app.use(errorMiddleware);
 
 app.get("/", (req: Request, res: Response) => {

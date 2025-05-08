@@ -4,7 +4,6 @@ import express from "express";
 import http from "http";
 import mongoose from "mongoose";
 import errorMiddleware from "./middleware/errorMiddleware.js";
-import { initSocket } from "./utils/socket.js";
 import userRoutes from "./routes/User.js";
 import tasksRoutes from "./routes/Tasks.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
@@ -27,7 +26,7 @@ mongoose
 app.use("/api/v1", notificationRoutes);
 app.use("/api/v1", tasksRoutes);
 app.use("/api/v1", userRoutes);
-initSocket(server);
+// initSocket(server);
 app.use(errorMiddleware);
 app.get("/", (req, res) => {
     res.send("hiii");
