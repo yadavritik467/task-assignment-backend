@@ -177,7 +177,7 @@ export const getAllTasks = catchAsync(
     });
     const completedTaskCount = await Task.countDocuments({
       ...assignedFilter,
-      status: STATUS.INPROGRESS,
+      status: STATUS.COMPLETED,
     });
     const now = new Date();
 
